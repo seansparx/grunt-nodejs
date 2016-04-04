@@ -1,15 +1,14 @@
 var grunt = require('grunt');
 
-//grunt.registerTask('default', 'Log some stuff.', function() {
-//    console.log('stuff');
-//});
-
-//grunt.tasks(['minify']);
-
-// print process.argv
 if(process.argv[2] == 'concat') {
-    grunt.tasks(['default']);
+    // Load the plugin that provides the "concat" task.
+    grunt.loadNpmTasks('grunt-contrib-concat');    
+    grunt.registerTask('concat', ['concat']);
+    grunt.tasks(['concat']);
 }
 else if(process.argv[2] == 'minify') {
+    // Load the plugin that provides the "uglify" task.
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.registerTask('minify', ['uglify']);
     grunt.tasks(['minify']);
 }
