@@ -15,6 +15,9 @@ else if (process.argv[2] == 'htmlmin') {
 else if (process.argv[2] == 'imagemin') {
     minifyIMG(process.argv[3], process.argv[4]);
 }
+else if (process.argv[2] == 'copy') {
+    copyFiles(process.argv[3], process.argv[4]);
+}
 
 
 function concat()
@@ -38,6 +41,35 @@ function concat()
     grunt.registerTask('combine', ['concat']);
     grunt.tasks(['combine']);
 }
+
+
+function copyFiles(src, dest)
+{
+    grunt.initConfig({
+        copy: {
+            main: {
+              files: [
+                // includes files within path 
+                {expand: true, src: ['path/*'], dest: 'dest/', filter: 'isFile'},
+
+                // includes files within path and its sub-directories 
+                {expand: true, src: ['path/**'], dest: 'dest/'},
+
+                // makes all src relative to cwd 
+                {expand: true, cwd: 'path/', src: ['**'], dest: 'dest/'},
+
+                // flattens results to a single level 
+                {expand: true, flatten: true, src: ['path/**'], dest: 'dest/', filter: 'isFile'},
+              ],
+            },
+          }
+    });
+
+    // Load the plugin that provides the "cssmin" task.
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.tasks(['copy']);
+}
+
 
 
 function minifyHTML(src, dest)
