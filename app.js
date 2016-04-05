@@ -1,7 +1,24 @@
 var grunt = require('grunt');
 
 if (process.argv[2] == 'concat') {
+    concat();
+}
+else if ((process.argv[2] == 'minify') && (process.argv[3] != '') && (process.argv[4] != '')) {
+    minifyJS(process.argv[3], process.argv[4]);
+}
+else if (process.argv[2] == 'cssmin') {
+    minifyCSS(process.argv[3], process.argv[4]);
+}
+else if (process.argv[2] == 'htmlmin') {
+    minifyHTML(process.argv[3], process.argv[4]);
+}
+else if (process.argv[2] == 'imagemin') {
+    minifyIMG(process.argv[3], process.argv[4]);
+}
 
+
+function concat()
+{
     grunt.initConfig({
         concat: {
             options: {
@@ -21,53 +38,43 @@ if (process.argv[2] == 'concat') {
     grunt.registerTask('combine', ['concat']);
     grunt.tasks(['combine']);
 }
-else if ((process.argv[2] == 'minify') && (process.argv[3] != '') && (process.argv[4] != '')) {
 
+
+function minifyHTML(src, dest)
+{
     grunt.initConfig({
-        uglify: {
-            my_target: {
-              files: [{
-                  expand: true,
-                  cwd: process.argv[3],
-                  src: '**/*.js',
-                  dest: process.argv[4]
-              }]
+        htmlmin: {
+            target: {
+                options: {                                 // Target options 
+                  removeComments: true,
+                  collapseWhitespace: true
+                },
+                files: [{
+                        expand: true,
+                        cwd: src,
+                        src: ['**/*.html'],
+                        dest: dest
+                    }]
             }
         }
     });
 
-    // Load the plugin that provides the "uglify" task.
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.registerTask('minify', ['uglify']);
-    grunt.tasks(['minify']);
+    // Load the plugin that provides the "cssmin" task.
+    grunt.loadNpmTasks('grunt-contrib-htmlmin');
+    grunt.tasks(['htmlmin']);
 }
-else if (process.argv[2] == 'minify') {
 
-    grunt.initConfig({
-        uglify: {
-            my_target: {
-                files: {
-                    'dest/output.min.js': ['src/ajax.js', 'src/form_validation.js', 'src/form_wizard.js']
-                }
-            }
-        }
-    });
 
-    // Load the plugin that provides the "uglify" task.
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.registerTask('minify', ['uglify']);
-    grunt.tasks(['minify']);
-}
-else if (process.argv[2] == 'cssmin') {
-
+function minifyCSS(src, dest)
+{
     grunt.initConfig({
         cssmin: {
             target: {
                 files: [{
                         expand: true,
-                        cwd: 'src/css',
+                        cwd: src,
                         src: ['*.css', '!*.min.css'],
-                        dest: 'dest/css',
+                        dest: dest,
                         ext: '.min.css'
                     }]
             }
@@ -76,42 +83,49 @@ else if (process.argv[2] == 'cssmin') {
 
     // Load the plugin that provides the "cssmin" task.
     grunt.loadNpmTasks('grunt-contrib-cssmin');
-    //grunt.registerTask('cssminify', ['cssmin']);
     grunt.tasks(['cssmin']);
 }
-else if (process.argv[2] == 'htmlmin') {
 
+
+function minifyIMG(src, dest)
+{
+    var mozjpeg = require('imagemin-mozjpeg');
+    
     grunt.initConfig({
-        htmlmin: {// Task 
-            dist: {// Target 
-                options: {// Target options 
-                    removeComments: true,
-                    collapseWhitespace: true
-                },
-                files: {// Dictionary of files 
-                    'dist/about.html': 'src/html/about.html', // 'destination': 'source' 
-                    'dist/account_setting.html': 'src/html/account_setting.html'
-                }
-            },
-            dev: {
-               // Another target 
-                    files: {
-                        'dist/cancel_FulhamFC.html': 'src/html/cancel_FulhamFC.html',
-                        'dist/challenges.html': 'src/html/challenges.html'
-                    }
-               
-            },
-            test: {// Another target 
-                files: {
-                    'dist/cancel_FulhamFC.html': 'src/html/cancel_FulhamFC.html',
-                    'dist/challenges.html': 'src/html/challenges.html'
-                }
+        imagemin: {                          // Task 
+            my_target: {                          // Target 
+              files: [{
+                expand: true,                  // Enable dynamic expansion 
+                cwd: src,                   // Src matches are relative to this path 
+                src: ['**/*.{png,jpg,gif}'],   // Actual patterns to match 
+                dest: dest                  // Destination path prefix 
+              }]
             }
         }
     });
 
     // Load the plugin that provides the "cssmin" task.
-    grunt.loadNpmTasks('grunt-contrib-htmlmin');
-    //grunt.registerTask('cssminify', ['cssmin']);
-    grunt.tasks(['htmlmin:dev']);
+    grunt.loadNpmTasks('grunt-contrib-imagemin');
+    grunt.tasks(['imagemin']);
+}
+
+
+function minifyJS(src, dest)
+{
+    grunt.initConfig({
+        uglify: {
+            my_target: {
+                files: [{
+                        expand: true,
+                        cwd: src,
+                        src: '**/*.js',
+                        dest: dest
+                    }]
+            }
+        }
+    });
+
+    // Load the plugin that provides the "uglify" task.
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.tasks(['uglify']);
 }
